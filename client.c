@@ -7,12 +7,14 @@
 #include <netdb.h>
 #include <stdlib.h>
 
+#define MAX_MSG_SIZE 2048 
+
 int main (int argc, char *argv[])
 {
 	int sockfd;
 	struct addrinfo hints, *res;
-	char buf[2048];
-	char msg[2048] = "";
+	char buf[MAX_MSG_SIZE];
+	char msg[MAX_MSG_SIZE] = "";
 
 	memset(&hints, 0, sizeof (hints));
 	hints.ai_family = AF_UNSPEC;
@@ -28,10 +30,11 @@ int main (int argc, char *argv[])
 	{
 		while (1)
 		{
-			if((recv(sockfd, buf, 2048, 0)) == -1)
+			if((recv(sockfd, buf, MAX_MSG_SIZE, 0)) == -1)
 			{
 				perror("recv");
-				exit(1);
+				close(sockfd);
+				exit(EXIT_FAILURE);
 			}
 			printf("%s\n", buf);
 		}
@@ -40,15 +43,16 @@ int main (int argc, char *argv[])
 	{
 		while (msg != "/exit\n")
 		{
-			fgets(msg, 2048, stdin);
+			fgets(msg, MAX_MSG_SIZE, stdin);
 			if ((send(sockfd, msg, sizeof(msg), 0)) == -1)
 			{
 				perror("send");
-				exit(1);
+				close(sockfd);
+				exit(EXIT_FAILURE);
 			}
 		}
 	}
 
 	close(sockfd);
-	exit(0);
+	exit(EXIT_SUCCESS);
 }
