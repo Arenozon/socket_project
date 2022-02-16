@@ -26,6 +26,8 @@ int main (int argc, char *argv[])
 
 	connect(sockfd, res->ai_addr, res->ai_addrlen);
 
+	system("clear");
+
 	if (fork() == 0)
 	{
 		while (1)
@@ -44,6 +46,7 @@ int main (int argc, char *argv[])
 		while (msg != "/exit\n")
 		{
 			fgets(msg, MAX_MSG_SIZE, stdin);
+			fputs("\033[A\033[2k",stdout);
 			if ((send(sockfd, msg, sizeof(msg), 0)) == -1)
 			{
 				perror("send");
